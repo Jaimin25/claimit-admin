@@ -1,6 +1,6 @@
-'use client';
-import { Input } from '@/components/ui/input';
-import { ArrowRight, Search } from 'lucide-react';
+"use client";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Search } from "lucide-react";
 
 export default function SearchInput() {
   return (

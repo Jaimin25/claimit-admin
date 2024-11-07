@@ -1,4 +1,7 @@
 "use client";
+import { Fragment } from "react";
+import { Slash } from "lucide-react";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,8 +11,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
-import { Slash } from "lucide-react";
-import { Fragment } from "react";
 
 export function Breadcrumbs() {
   const items = useBreadcrumbs();
