@@ -7,7 +7,7 @@ import { Config } from "@/lib/config";
 export async function POST(req: NextRequest) {
   const data = await req.json();
 
-  const res = await axios.post(`${Config.API_URL}/signin`, {
+  const res = await axios.post(`${Config.API_URL}/admin/signin`, {
     emailOrPhone: data.emailOrPhone,
     password: data.password,
   });

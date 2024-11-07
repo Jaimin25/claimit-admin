@@ -5,7 +5,7 @@ import { Config } from "@/lib/config";
 
 export async function POST(req: NextRequest) {
   axios.defaults.withCredentials = true;
-  const res = await axios.post(`${Config.API_URL}/authUser`, "", {
+  const res = await axios.post(`${Config.API_URL}/admin/authUser`, "", {
     withCredentials: true,
     headers: {
       cookie: `session=${req.cookies.get("session")?.value}`,

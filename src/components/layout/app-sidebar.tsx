@@ -50,6 +50,7 @@ import { navItems } from "@/constants/data";
 
 import { Breadcrumbs } from "../breadcrumbs";
 import { Icons } from "../icons";
+import { useUser } from "../providers/user-provider";
 import SearchInput from "../search-input";
 
 import ThemeToggle from "./ThemeToggle/theme-toggle";
@@ -66,6 +67,8 @@ export default function AppSidebar({
 }: {
   children: React.ReactNode;
 }) {
+  const { signOut, user } = useUser();
+
   const [mounted, setMounted] = React.useState(false);
 
   const pathname = usePathname();
@@ -162,14 +165,19 @@ export default function AppSidebar({
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={""} alt={""} />
+                      <AvatarImage src={user?.profilePicUrl} alt={""} />
                       <AvatarFallback className="rounded-lg">
-                        {"CN"}
+                        {user && user?.firstname[0] + user?.lastname[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{""}</span>
-                      <span className="truncate text-xs">{""}</span>
+                      <span className="truncate font-semibold">
+                        {user && user?.firstname}
+                      </span>
+                      <span className="truncate text-xs">
+                        {" "}
+                        {user && user?.email}
+                      </span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
                   </SidebarMenuButton>
@@ -183,14 +191,19 @@ export default function AppSidebar({
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={""} alt={""} />
+                        <AvatarImage src={user?.profilePicUrl} alt={""} />
                         <AvatarFallback className="rounded-lg">
-                          {"CN"}
+                          {user && user!.firstname[0] + user!.lastname[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-semibold">{""}</span>
-                        <span className="truncate text-xs"> {""}</span>
+                        <span className="truncate font-semibold">
+                          {user && user?.firstname}
+                        </span>
+                        <span className="truncate text-xs">
+                          {" "}
+                          {user && user?.email}
+                        </span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
@@ -211,7 +224,11 @@ export default function AppSidebar({
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
                     <LogOut />
                     Log out
                   </DropdownMenuItem>

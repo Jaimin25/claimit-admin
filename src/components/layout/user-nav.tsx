@@ -12,23 +12,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useUser } from "../providers/user-provider";
+
 export function UserNav() {
+  const { user, signOut } = useUser();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={""} alt={""} />
-            <AvatarFallback>DU</AvatarFallback>
+          <Avatar className="h-8 w-8 rounded-lg">
+            <AvatarImage src={user?.profilePicUrl} alt={""} />
+            <AvatarFallback className="rounded-lg">
+              {user && user?.firstname[0] + user?.lastname[0]}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Demo</p>
+            <p className="text-sm font-medium leading-none">
+              {user?.firstname}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
-              abc@example.com
+              {user?.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -49,7 +56,7 @@ export function UserNav() {
           <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => signOut()}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>

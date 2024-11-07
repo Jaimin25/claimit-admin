@@ -1,10 +1,12 @@
 "use client";
-import { useTransition } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { useUser } from "@/components/providers/user-provider";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,29 +17,61 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Config } from "@/lib/config";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 
-const formSchema = z.object({
+const signInFormSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
+  password: z.string().trim().min(6),
 });
 
-type UserFormValue = z.infer<typeof formSchema>;
+type UserFormValue = z.infer<typeof signInFormSchema>;
+
+async function signInSubmit(values: z.infer<typeof signInFormSchema>) {
+  return await axios.post(`${Config.APP_URL}/api/auth/signin`, {
+    emailOrPhone: values.email,
+    password: values.password,
+  });
+}
 
 export default function UserAuthForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const { fetchUser } = useUser();
+  const [toastId, setToastId] = useState<string | number>();
+  const router = useRouter();
   const [loading, startTransition] = useTransition();
   const defaultValues = {
-    email: "demo@gmail.com",
+    email: "",
+    password: "",
   };
+
   const form = useForm<UserFormValue>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(signInFormSchema),
     defaultValues,
+  });
+
+  const mutation = useMutation({
+    mutationFn: signInSubmit,
+    onSuccess: async (res) => {
+      const data = res.data;
+
+      if (data.statusCode === 200) {
+        toast.success(data.statusMessage, { id: toastId });
+        await fetchUser();
+        router.push("/dashboard/overview");
+      } else {
+        toast.error(data.statusMessage, { id: toastId });
+      }
+    },
+    onError: (error) =>
+      toast.error(`${error.name}: ${error.message}`, { id: toastId }),
   });
 
   const onSubmit = async (data: UserFormValue) => {
     startTransition(() => {
-      toast.success("Signed In Successfully!");
+      mutation.mutate(data);
+      const currentToastId = toast.loading("Signing in...");
+      setToastId(currentToastId);
     });
   };
 
@@ -66,22 +100,29 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Enter your password..."
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Continue With Email
+            Login
           </Button>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
     </>
   );
 }

@@ -5,21 +5,24 @@ import { Config } from "@/lib/config";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  // const response = NextResponse.next({
-  //   request: {
-  //     headers: request.headers,
-  //   },
-  // });
-  // const isAuthenticated = await checkAuthentication(request);
-  // const { pathname } = request.nextUrl;
-  // // if (pathname === "/" && isAuthenticated) {
-  // //   return NextResponse.redirect(new URL("/", request.url));
-  // // }
-  // // if (!isAuthenticated) {
-  // //   return NextResponse.rewrite(new URL("/dashboard", request.nextUrl.origin));
-  // // }
-  // const url = request.url.replace(request.nextUrl.pathname, "/");
-  // return Response.redirect(url);
+  const response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const isAuthenticated = await checkAuthentication(request);
+
+  const { pathname } = request.nextUrl;
+
+  if (pathname === "/" && isAuthenticated) {
+    return NextResponse.redirect(new URL("/dashboard/overview", request.url));
+  }
+
+  if (!isAuthenticated) {
+    return NextResponse.rewrite(new URL("/", request.nextUrl.origin));
+  }
+  return response;
 }
 
 async function checkAuthentication(request: NextRequest): Promise<boolean> {
@@ -33,7 +36,7 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
     });
     const data = await res.json();
 
-    return data.statusMessage === "Authenticated!";
+    return data.statusMessage === "Admin Authenticated!";
   } catch (error) {
     console.log(error);
     return false;
@@ -42,5 +45,5 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/"],
 };

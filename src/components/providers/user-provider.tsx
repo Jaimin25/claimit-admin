@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -57,7 +58,12 @@ const checkAuthentication = async () => {
   });
 };
 
+const signOutUser = async () => {
+  return await axios.post(`${Config.APP_URL}/api/auth/signout`);
+};
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<UserProps | null>();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
@@ -82,6 +88,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (data.statusCode === 200) {
         setIsAuthenticated(true);
+        mutation.mutate();
       } else {
         setIsAuthenticated(false);
       }
@@ -89,9 +96,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     onError: (error) => toast.error(`${error.name}: ${error.message}`),
   });
 
+  const signOutMutation = useMutation({
+    mutationFn: signOutUser,
+    onSuccess: async (res) => {
+      const data = await res.data;
+
+      if (data.statusCode === 200) {
+        setUser(null);
+        setIsAuthenticated(false);
+        router.push("/");
+      } else {
+        toast.error(data.statusMessage);
+      }
+    },
+    onError: (error) =>
+      toast.error(`${error.name}: ${error.message}`, { id: toastId }),
+  });
+
   useEffect(() => {
     if (!user) {
-      mutation.mutate();
       authMutation.mutate();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,8 +126,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+    signOutMutation.mutate();
   };
 
   return (
