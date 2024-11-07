@@ -1,5 +1,6 @@
-import AppSidebar from "@/components/layout/app-sidebar";
 import type { Metadata } from "next";
+
+import AppSidebar from "@/components/layout/app-sidebar";
 
 export const metadata: Metadata = {
   title: "Next Shadcn Dashboard Starter",

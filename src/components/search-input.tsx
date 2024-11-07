@@ -1,6 +1,7 @@
 "use client";
-import { Input } from "@/components/ui/input";
 import { ArrowRight, Search } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
 
 export default function SearchInput() {
   return (
