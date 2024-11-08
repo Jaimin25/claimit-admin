@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import NextTopLoader from "nextjs-toploader";
+import { NuqsAdapter } from "nuqs/adapters/react";
 
 import QueryProvider from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -43,8 +44,10 @@ export default function RootLayout({
         >
           <QueryProvider>
             <UserProvider>
-              <Toaster />
-              {children}
+              <NuqsAdapter>
+                <Toaster />
+                {children}
+              </NuqsAdapter>
             </UserProvider>
           </QueryProvider>
         </ThemeProvider>
