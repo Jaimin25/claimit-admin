@@ -26,24 +26,32 @@ export const columns: ColumnDef<Users>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "first_name",
-    header: "NAME",
+    accessorKey: "uid",
+    header: "UID",
   },
   {
-    accessorKey: "country",
-    header: "COUNTRY",
+    accessorKey: "username",
+    header: "USERNAME",
+  },
+  {
+    accessorKey: "firstname",
+    header: "FIRSTNAME",
+  },
+  {
+    accessorKey: "lastname",
+    header: "LASTNAME",
   },
   {
     accessorKey: "email",
     header: "EMAIL",
   },
   {
-    accessorKey: "job",
-    header: "COMPANY",
+    accessorKey: "stripeCustomerId",
+    header: "STRIPE ID",
   },
   {
-    accessorKey: "gender",
-    header: "GENDER",
+    accessorKey: "createdAt",
+    header: "CREATED AT",
   },
   {
     id: "actions",
