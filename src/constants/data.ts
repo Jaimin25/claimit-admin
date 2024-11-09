@@ -29,7 +29,7 @@ export type Users = {
   accountStatus: ACCOUNT_STATUS;
   role: ACCOUNT_ROLE;
   accountType: ACCOUNT_TYPE;
-  identityVerified: string;
+  identityVerified: boolean;
   streetAddress: string;
   city: string;
   state: string;

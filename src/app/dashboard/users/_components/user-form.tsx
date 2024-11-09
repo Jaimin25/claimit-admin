@@ -1,10 +1,12 @@
 "use client";
 import * as React from "react";
+import { Shield, ShieldHalf, UserRound } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -22,41 +23,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  ACCOUNT_ROLE,
+  ACCOUNT_STATUS,
+  ACCOUNT_TYPE,
+  Users,
+} from "@/constants/data";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  country: z.string({
-    required_error: "Please select a country.",
-  }),
+  firstname: z.string(),
+  lastname: z.string(),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  company: z.string().min(1, {
-    message: "Company name is required.",
+  emailVerified: z.boolean(),
+  identityVerified: z.boolean(),
+  username: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
   }),
-  gender: z.enum(["male", "female", "other"], {
-    required_error: "Please select a gender.",
-  }),
+  account_status: z.nativeEnum(ACCOUNT_STATUS),
+  role: z.nativeEnum(ACCOUNT_ROLE),
+  accountType: z.nativeEnum(ACCOUNT_TYPE),
+  streetAddress: z.string(),
+  city: z.string(),
+  state: z.string(),
+  country: z.string(),
+  zipcode: z.string(),
 });
 
-export default function UserForm() {
+export default function UserForm({ data }: { data: Users }) {
+  console.log(data);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      country: "",
-      email: "",
-      company: "",
-      gender: undefined,
+      username: data.username,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      emailVerified: data.emailVerified,
+      identityVerified: data.identityVerified,
+      email: data.email,
+      account_status: data.accountStatus as ACCOUNT_STATUS,
+      role: data.role as ACCOUNT_ROLE,
+      accountType: data.accountType as ACCOUNT_TYPE,
+      streetAddress: data.streetAddress,
+      city: data.city,
+      state: data.state,
+      country: data.country,
+      zipcode: data.zipcode,
     },
   });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
 
   return (
     <Card className="mx-auto w-full">
@@ -67,16 +83,20 @@ export default function UserForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form className="space-y-8">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <FormField
                 control={form.control}
-                name="name"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your name" {...field} />
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        value={data.username}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -84,27 +104,26 @@ export default function UserForm() {
               />
               <FormField
                 control={form.control}
-                name="country"
+                name="firstname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="usa">USA</SelectItem>
-                        <SelectItem value="uk">UK</SelectItem>
-                        <SelectItem value="canada">Canada</SelectItem>
-                        <SelectItem value="australia">Australia</SelectItem>
-                        <SelectItem value="germany">Germany</SelectItem>
-                        <SelectItem value="france">France</SelectItem>
-                        <SelectItem value="japan">Japan</SelectItem>
-                        <SelectItem value="brazil">Brazil</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Firstname</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Firstname" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lastname</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Lastname" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -128,55 +147,233 @@ export default function UserForm() {
               />
               <FormField
                 control={form.control}
-                name="company"
+                name="emailVerified"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0 ">
+                    <FormControl>
+                      <Checkbox checked={field.value} onChange={() => {}} />
+                    </FormControl>
+                    <FormLabel>Email Verified</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="identityVerified"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2 space-y-0 ">
+                    <FormControl>
+                      <Checkbox checked={field.value} onChange={() => {}} />
+                    </FormControl>
+                    <FormLabel>Identity Verified</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="account_status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel>Account Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Account Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent defaultValue={"active"}>
+                        <SelectItem value="ACTIVE" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="bg-emerald-500 text-white"
+                          >
+                            ACTIVE
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="BLACKLIST" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="bg-orange-500 text-white"
+                          >
+                            BLACKLIST
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="BANNED" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="bg-red-500 text-white"
+                          >
+                            BANNED
+                          </Badge>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="accountType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Account Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent defaultValue={"active"}>
+                        <SelectItem value="FREE" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="bg-indigo-500 text-white"
+                          >
+                            FREE
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="PREMIUM" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="bg-yellow-500 text-white"
+                          >
+                            PREMIUM
+                          </Badge>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="User Role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="USER" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="flex bg-cyan-500 text-white items-center space-x-1"
+                          >
+                            <UserRound size={16} />
+                            <p>USER</p>
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="MOD" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="flex bg-lime-500 text-white items-center space-x-1"
+                          >
+                            <ShieldHalf size={16} />
+                            <p>MOD</p>
+                          </Badge>
+                        </SelectItem>
+                        <SelectItem value="ADMIN" disabled>
+                          <Badge
+                            variant={"outline"}
+                            className="flex bg-blue-500 text-white items-center space-x-1"
+                          >
+                            <Shield size={16} />
+                            <p>ADMIN</p>
+                          </Badge>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="streetAddress"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your company" {...field} />
+                      <Input placeholder="Enter your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Firstname" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Lastname" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="zipcode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Zipcode</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      className="flex space-x-4"
-                    >
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="male" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Male</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="female" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Female</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-2">
-                        <FormControl>
-                          <RadioGroupItem value="other" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Other</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Submit</Button>
           </form>
         </Form>
       </CardContent>
