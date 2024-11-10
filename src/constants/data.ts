@@ -16,6 +16,13 @@ export enum ACCOUNT_TYPE {
   "PREMIUM",
 }
 
+export enum AUCTION_STATUS {
+  "ACTIVE",
+  "UPCOMING",
+  "SOLD",
+  "FINISHED",
+}
+
 export type Users = {
   uid: string;
   stripeCustomerId: string;
@@ -38,15 +45,26 @@ export type Users = {
   createdAt: string;
 };
 
-export type Product = {
-  photo_url: string;
-  name: string;
+export type Auctions = {
+  id: string;
+  uid: string;
+  title: string;
   description: string;
-  created_at: string;
-  price: number;
-  id: number;
+  imagesUrl: string;
   category: string;
-  updated_at: string;
+  auctionStatus: AUCTION_STATUS;
+  basePrice: number;
+  buyPrice: number;
+  startingDate: string;
+  endingDate: string;
+  city: string;
+  state: string;
+  country: string;
+  zipcode: string;
+  createdAt: string;
+  user: {
+    username: string;
+  };
 };
 
 export const navItems: NavItem[] = [
